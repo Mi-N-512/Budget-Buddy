@@ -175,6 +175,7 @@ class LocalDataStore(context: Context) {
                 .put("photoPath", draft.photoPath)
                 .put("addsToSpendingLimit", draft.addsToSpendingLimit)
                 .put("isOcr", draft.isOcr)
+                .put("repeat", draft.repeat.name)
                 .toString()
         ).apply()
     }
@@ -190,7 +191,8 @@ class LocalDataStore(context: Context) {
             categoryName = value.optNullableString("categoryName"),
             photoPath = value.optNullableString("photoPath"),
             addsToSpendingLimit = value.optBoolean("addsToSpendingLimit"),
-            isOcr = value.optBoolean("isOcr")
+            isOcr = value.optBoolean("isOcr"),
+            repeat = RepeatFrequency.fromStored(value.optNullableString("repeat"))
         )
     }.getOrNull()
 
@@ -331,6 +333,46 @@ class LocalDataStore(context: Context) {
         rebuildBudgetSpending()
     }
 
+    /**
+     * Adds any repeating records whose next date has arrived. Copies get a stable id per
+     * date and no receipt, and the source remembers how far it has been filled in so a
+     * copy the user deleted is not added back. Returns how many copies were added.
+     */
+    fun catchUpRecurringTransactions(today: java.time.LocalDate = java.time.LocalDate.now()): Int {
+        val transactions = getTransactions()
+        if (transactions.none { it.repeat != RepeatFrequency.NONE }) return 0
+        val existingIds = transactions.mapTo(mutableSetOf(), Transaction::transactionId)
+        val added = mutableListOf<Transaction>()
+        val updated = transactions.map { source ->
+            if (source.repeat == RepeatFrequency.NONE) return@map source
+            val start = runCatching { java.time.LocalDate.parse(source.date) }.getOrNull() ?: return@map source
+            val through = source.repeatsThrough?.let { runCatching { java.time.LocalDate.parse(it) }.getOrNull() }
+            val due = RecurringSchedule.dueDates(start, source.repeat, through, today)
+            if (due.isEmpty()) return@map source
+            due.forEach { date ->
+                val id = RecurringSchedule.copyId(source.transactionId, date)
+                if (existingIds.add(id)) {
+                    added += source.copy(
+                        transactionId = id,
+                        date = date.toString(),
+                        photoPath = null,
+                        isOcr = false,
+                        repeat = RepeatFrequency.NONE,
+                        repeatsThrough = null,
+                        repeatOf = source.transactionId
+                    )
+                }
+            }
+            source.copy(repeatsThrough = due.last().toString())
+        }
+        if (updated == transactions && added.isEmpty()) return 0
+        val array = JSONArray()
+        (updated + added).forEach { array.put(it.toJson()) }
+        preferences.edit().putString(KEY_TRANSACTIONS, array.toString()).apply()
+        if (added.isNotEmpty()) rebuildBudgetSpending()
+        return added.size
+    }
+
     fun getTransaction(transactionId: String): Transaction? =
         getTransactions().firstOrNull { it.transactionId == transactionId }
 
@@ -456,6 +498,9 @@ class LocalDataStore(context: Context) {
         .put("isIncome", isIncome)
         .put("addsToSpendingLimit", addsToSpendingLimit)
         .put("isOcr", isOcr)
+        .put("repeat", repeat.name)
+        .put("repeatsThrough", repeatsThrough)
+        .put("repeatOf", repeatOf)
 
     private fun JSONObject.toTransaction(): Transaction {
         val isOcr = optBoolean("isOcr")
@@ -470,7 +515,10 @@ class LocalDataStore(context: Context) {
             isIncome = optBoolean("isIncome"),
             photoPath = optNullableString("photoPath"),
             addsToSpendingLimit = optBoolean("addsToSpendingLimit"),
-            isOcr = isOcr
+            isOcr = isOcr,
+            repeat = RepeatFrequency.fromStored(optNullableString("repeat")),
+            repeatsThrough = optNullableString("repeatsThrough")?.takeIf(::isValidStoredDate),
+            repeatOf = optNullableString("repeatOf")
         )
     }
 

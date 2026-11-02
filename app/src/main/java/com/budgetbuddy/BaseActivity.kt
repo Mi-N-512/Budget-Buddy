@@ -49,6 +49,20 @@ abstract class BaseActivity : AppCompatActivity() {
         enterImmersiveMode()
     }
 
+    override fun onResume() {
+        super.onResume()
+        // Repeating records are added here, before each screen refreshes in its own onResume,
+        // so rent day shows up wherever the user happens to be. Tutorial screens use demo data.
+        if (intent.getIntExtra(TutorialFlow.EXTRA_STEP, -1) >= 0) return
+        val added = runCatching { LocalDataStore(this).catchUpRecurringTransactions() }.getOrDefault(0)
+        if (added > 0) {
+            ToastUtil.showCustomToast(
+                this,
+                resources.getQuantityString(R.plurals.recurring_added_toast, added, added)
+            )
+        }
+    }
+
     override fun onWindowFocusChanged(hasFocus: Boolean) {
         super.onWindowFocusChanged(hasFocus)
         if (hasFocus) enterImmersiveMode()

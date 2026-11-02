@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Category limits card on Analytics -->
+    <string name="category_limits_title">Category limits</string>
+    <string name="category_limits_subtitle">Each category against its own little budget</string>
+    <string name="category_limits_empty">No category limits this month. Give a category its own budget on the Budget screen and Budster will keep an eye on it.</string>
+    <string name="category_limit_spent_of">%1$s of %2$s</string>
+    <string name="category_limit_roomy">%1$s left. Plenty of wiggle room!</string>
+    <string name="category_limit_snug">%1$s left. Getting a bit snug in here.</string>
+    <string name="category_limit_tight">Only %1$s left. Budster is hiding the wallet.</string>
+    <string name="category_limit_over">Over by %1$s. Budster needs a little lie-down.</string>
+    <string name="category_limit_row_description">%1$s: %2$d%% of its limit used</string>
+
+    <!-- Repeating transactions -->
+    <string name="repeat_none">Does not repeat</string>
+    <string name="repeat_weekly">Repeats every week</string>
+    <string name="repeat_monthly">Repeats every month</string>
+    <string name="repeat_yearly">Repeats every year</string>
+    <string name="repeat_choice_description">How often this transaction repeats</string>
+    <string name="repeat_copy_note">Added automatically from a repeating transaction</string>
+    <string name="repeat_saved_toast">Saved! Budster will add it again when it comes round.</string>
+    <plurals name="recurring_added_toast">
+        <item quantity="one">Budster added %d repeating transaction for you</item>
+        <item quantity="other">Budster added %d repeating transactions for you</item>
+    </plurals>
+</resources>

@@ -40,6 +40,7 @@ class TransactionActivity : BaseActivity() {
     private var isOcrTransaction = false
     private var editingTransaction: Transaction? = null
     private var preferredCategoryId: String? = null
+    private var selectedRepeat = RepeatFrequency.NONE
     private var userCurrencySymbol = CurrencyCatalog.DEFAULT_SYMBOL
     private val isTutorialMode: Boolean
         get() = intent.getIntExtra(TutorialFlow.EXTRA_STEP, -1) >= 0
@@ -80,6 +81,7 @@ class TransactionActivity : BaseActivity() {
         selectExpense()
         setupNavigation()
         setupCategorySpinner()
+        setupRepeatSpinner()
         loadTransactionForEditing()
 
         binding.etAmount.setOnFocusChangeListener { _, hasFocus ->
@@ -106,6 +108,7 @@ class TransactionActivity : BaseActivity() {
             selectedPhotoPath = it.getString(STATE_PHOTO_PATH)
             draftPhotoPath = it.getString(STATE_DRAFT_PHOTO_PATH)
             preferredCategoryId = it.getString(STATE_CATEGORY)
+            selectRepeat(RepeatFrequency.fromStored(it.getString(STATE_REPEAT)))
             if (isIncome) selectIncome() else selectExpense()
             setupCategorySpinner()
             showReceipt()
@@ -132,6 +135,7 @@ class TransactionActivity : BaseActivity() {
         outState.putString(STATE_PHOTO_PATH, selectedPhotoPath)
         outState.putString(STATE_DRAFT_PHOTO_PATH, draftPhotoPath)
         outState.putString(STATE_CATEGORY, (binding.spinnerCategory.selectedItem as? Category)?.id)
+        outState.putString(STATE_REPEAT, selectedRepeat.name)
     }
 
     override fun onStop() {
@@ -171,9 +175,45 @@ class TransactionActivity : BaseActivity() {
         isOcrTransaction = transaction.isOcr
         binding.switchAddIncomeToLimit.isChecked = transaction.addsToSpendingLimit
         preferredCategoryId = transaction.categoryId
+        selectRepeat(transaction.repeat)
+        // A copy belongs to its repeating source; only the source can change the schedule.
+        binding.repeatRow.visibility = if (transaction.repeatOf != null) View.GONE else View.VISIBLE
         if (transaction.isIncome) selectIncome() else selectExpense()
         setupCategorySpinner()
         showReceipt()
+    }
+
+    private fun setupRepeatSpinner() {
+        val options = RepeatFrequency.entries
+        val labels = options.map { getString(repeatLabel(it)) }
+        val adapter = object : ArrayAdapter<String>(this, R.layout.spinner_item_repeat, R.id.repeatText, labels) {
+            override fun getView(position: Int, convertView: View?, parent: ViewGroup): View =
+                super.getView(position, convertView, parent).also { view ->
+                    // The row already draws the rounded input box; the item must not cover its border.
+                    view.background = null
+                    RuntimePaletteApplier.applyIfCustom(view)
+                }
+
+            override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup): View {
+                val view = convertView ?: layoutInflater.inflate(R.layout.spinner_dropdown_item_repeat, parent, false)
+                RuntimePaletteApplier.applyIfCustom(view)
+                view.findViewById<TextView>(R.id.dropdownText).text = labels[position]
+                return view
+            }
+        }
+        binding.spinnerRepeat.adapter = adapter
+        binding.spinnerRepeat.setSelection(options.indexOf(selectedRepeat))
+        binding.spinnerRepeat.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
+                selectedRepeat = options[position]
+            }
+            override fun onNothingSelected(parent: AdapterView<*>) = Unit
+        }
+    }
+
+    private fun selectRepeat(repeat: RepeatFrequency) {
+        selectedRepeat = repeat
+        binding.spinnerRepeat.setSelection(RepeatFrequency.entries.indexOf(repeat))
     }
 
     private fun setupNavigation() {
@@ -438,6 +478,7 @@ class TransactionActivity : BaseActivity() {
         preferredCategoryId = draft.categoryName
         isOcrTransaction = draft.isOcr
         binding.switchAddIncomeToLimit.isChecked = draft.addsToSpendingLimit
+        selectRepeat(draft.repeat)
         if (draft.isIncome) selectIncome() else selectExpense()
         setupCategorySpinner()
         showReceipt()
@@ -455,7 +496,8 @@ class TransactionActivity : BaseActivity() {
                 ?: localData.ocrDefaultCategory.takeIf { isOcrTransaction },
             photoPath = selectedPhotoPath,
             addsToSpendingLimit = isIncome && binding.switchAddIncomeToLimit.isChecked,
-            isOcr = isOcrTransaction
+            isOcr = isOcrTransaction,
+            repeat = selectedRepeat
         )
     }
 
@@ -467,6 +509,7 @@ class TransactionActivity : BaseActivity() {
             isIncome ||
             addsToSpendingLimit ||
             isOcr ||
+            repeat != RepeatFrequency.NONE ||
             (date.isNotBlank() && date != today())
 
     private fun today(): String =
@@ -500,13 +543,24 @@ class TransactionActivity : BaseActivity() {
             isIncome = isIncome,
             photoPath = selectedPhotoPath,
             addsToSpendingLimit = isIncome && binding.switchAddIncomeToLimit.isChecked,
-            isOcr = isOcrTransaction
+            isOcr = isOcrTransaction,
+            repeat = if (original?.repeatOf != null) RepeatFrequency.NONE else selectedRepeat,
+            repeatsThrough = original?.repeatsThrough,
+            repeatOf = original?.repeatOf
         )
         runCatching { localData.saveTransaction(transaction) }
             .onSuccess {
                 draftPhotoPath = null
                 localData.clearTransactionDraft()
-                toast(getString(if (original == null) R.string.transaction_saved else R.string.transaction_updated))
+                // A repeating record dated in the past fills in its missed dates straight away.
+                val added = runCatching { localData.catchUpRecurringTransactions() }.getOrDefault(0)
+                toast(
+                    when {
+                        added > 0 -> resources.getQuantityString(R.plurals.recurring_added_toast, added, added)
+                        transaction.repeat != RepeatFrequency.NONE -> getString(R.string.repeat_saved_toast)
+                        else -> getString(if (original == null) R.string.transaction_saved else R.string.transaction_updated)
+                    }
+                )
                 AchievementManager.unlockAchievement("first_transaction", this)
                 AchievementManager.checkStayWithinBudgetForMonth(LocalDataStore.LOCAL_USER_ID, selectedDate.take(7), this)
                 if (original != null) finish() else resetForm()
@@ -523,6 +577,8 @@ class TransactionActivity : BaseActivity() {
         selectedPhotoPath = null
         isOcrTransaction = false
         binding.switchAddIncomeToLimit.isChecked = false
+        selectRepeat(RepeatFrequency.NONE)
+        binding.repeatRow.visibility = View.VISIBLE
         showReceipt()
         selectExpense()
         initDate()
@@ -543,6 +599,14 @@ class TransactionActivity : BaseActivity() {
         private const val STATE_CATEGORY = "category"
         private const val STATE_ADD_INCOME_TO_LIMIT = "addIncomeToLimit"
         private const val STATE_IS_OCR = "isOcr"
+        private const val STATE_REPEAT = "repeat"
+
+        fun repeatLabel(repeat: RepeatFrequency): Int = when (repeat) {
+            RepeatFrequency.NONE -> R.string.repeat_none
+            RepeatFrequency.WEEKLY -> R.string.repeat_weekly
+            RepeatFrequency.MONTHLY -> R.string.repeat_monthly
+            RepeatFrequency.YEARLY -> R.string.repeat_yearly
+        }
     }
 }
 // End of class: TransactionActivity

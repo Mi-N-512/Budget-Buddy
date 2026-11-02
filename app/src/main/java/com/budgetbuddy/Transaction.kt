@@ -19,7 +19,13 @@ data class Transaction(
     val isIncome: Boolean = false,
     val photoPath: String? = null,
     val addsToSpendingLimit: Boolean = false,
-    val isOcr: Boolean = false
+    val isOcr: Boolean = false,
+    /** How often this record comes round again; NONE for ordinary one-off records. */
+    val repeat: RepeatFrequency = RepeatFrequency.NONE,
+    /** Last date (yyyy-MM-dd) a copy was added for, so deleted copies are not re-added. */
+    val repeatsThrough: String? = null,
+    /** For an added copy: the id of the repeating record it came from. */
+    val repeatOf: String? = null
 )
 // End of class: Transaction
 
@@ -39,6 +45,7 @@ data class TransactionDraft(
     val categoryName: String? = null,
     val photoPath: String? = null,
     val addsToSpendingLimit: Boolean = false,
-    val isOcr: Boolean = false
+    val isOcr: Boolean = false,
+    val repeat: RepeatFrequency = RepeatFrequency.NONE
 )
 // End of class: TransactionDraft
