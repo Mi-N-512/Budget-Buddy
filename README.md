@@ -131,7 +131,7 @@ Budget Buddy is a single-module native Android application written in Kotlin wit
 
 ### Technology
 
-- Kotlin 2.1, Android SDK 36, minimum SDK 27, and JDK 17+
+- Kotlin 2.1, Android SDK 36, minimum SDK 27, and JDK 17 +
 - Gradle 8.14.5, Android Gradle Plugin 8.13.2, and Kotlin DSL
 - AndroidX, Material Components, View Binding, and Data Binding
 - MPAndroidChart and SpeedView for offline visualisations
