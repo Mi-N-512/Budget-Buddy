@@ -1,185 +1,173 @@
 <p align="center">
-  <img src="app/src/main/res/drawable/logo.png" alt="Budget Buddy logo" width="180" />
-  <br />
-  <img src="app/src/main/res/drawable/happy_buddy.png" alt="Budster the Budgeter smiling with a wallet" width="220" />
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/images/banner-dark.png">
+    <img src="docs/images/banner-light.png" width="820" alt="Budget Buddy: offline budgeting with a friendly face. Budster the Budgeter holds a wallet beside the OCR and No OCR edition labels">
+  </picture>
 </p>
 
-# Budget Buddy 3.0 Stable
+<p align="center">
+  <img src="https://img.shields.io/badge/version-3.0-46b793" alt="Version 3.0">
+  <img src="https://img.shields.io/badge/Android-8.1%2B-3ddc84?logo=android&logoColor=white" alt="Android 8.1 and newer">
+  <img src="https://img.shields.io/badge/editions-OCR%20%C2%B7%20No%20OCR-6e7681" alt="Editions: OCR and No OCR">
+  <img src="https://img.shields.io/badge/works-offline-46b793" alt="Works offline">
+  <img src="https://img.shields.io/badge/ads-none-6e7681" alt="No advertising">
+</p>
 
-Budget Buddy is a playful, accessible Android budgeting app that works intentionally and completely offline. It helps people see how their finances are doing now, understand where money is going, and plan a monthly budget for what comes next—without creating an account or handing personal financial records to a server.
+<p align="center">
+  <a href="#see-it-in-action">See it in action</a> ·
+  <a href="#main-features">Features</a> ·
+  <a href="#choose-your-edition">Editions</a> ·
+  <a href="https://github.com/Mi-N-512/Budget-Buddy/releases/latest">Download</a> ·
+  <a href="#get-started">Get started</a> ·
+  <a href="#open-and-build-the-project">Build</a>
+</p>
 
-> **AI summary:** Budget Buddy 3.0 is a private offline budget planner with clear visual analytics, flexible themes, a guided tutorial, and a choice between faster receipt entry with on-device OCR or a smaller manual-only app.
+Budget Buddy is an Android budgeting app that works completely offline. It shows how your money is doing this month, where it's going, and how much is left, with Budster the Budgeter reacting as you go. There's no account to create, and your records never leave the phone.
+
+Version 3.0 is free to [download from GitHub Releases](https://github.com/Mi-N-512/Budget-Buddy/releases/latest).
+
+To get updates automatically, add it to [Obtainium](https://github.com/ImranR98/Obtainium), which installs straight from GitHub Releases. When it asks which APK to use, pick your edition.
+
+<a href="https://apps.obtainium.imranr.dev/redirect?r=obtainium://add/https://github.com/Mi-N-512/Budget-Buddy"><img src="https://raw.githubusercontent.com/ImranR98/Obtainium/main/assets/graphics/badge_obtainium.png" height="54" alt="Get it on Obtainium"></a>
+
+## See it in action
+
+<table>
+  <tr>
+    <td align="center" width="50%"><img src="docs/screenshots/home-light.png" width="300" alt="Home in Light mode showing cash flow, the monthly spending limit and recent records"></td>
+    <td align="center" width="50%"><img src="docs/screenshots/analytics-light.png" width="300" alt="Analytics showing the spending gauge with matching green, dark yellow and red chart colours"></td>
+  </tr>
+  <tr>
+    <td align="center"><b>Home.</b> Cash flow, what's left of this month's limit and your latest records.</td>
+    <td align="center"><b>Analytics.</b> The gauge and charts use the same colours, so you can read them at a glance.</td>
+  </tr>
+  <tr>
+    <td align="center"><img src="docs/screenshots/themes-colours.png" width="300" alt="Themes and colours screen with Light, Dark, Material You, OLED black, Custom and accessible gauge choices"></td>
+    <td align="center"><img src="docs/screenshots/ocr-tutorial.png" width="300" alt="OCR tutorial showing offline receipt suggestions for merchant, date, total, category and items"></td>
+  </tr>
+  <tr>
+    <td align="center"><b>Themes and colours.</b> Change the theme and gauge palette and see them update live.</td>
+    <td align="center"><b>Receipts.</b> The OCR edition reads a receipt on the phone and suggests the details for you to check.</td>
+  </tr>
+</table>
+
+## Main features
+
+### Track your money
+
+Record income and expenses with a date, category, amount, note and an optional receipt photo. Tap a record to see or edit it, and press and hold to delete it. History can be filtered by type, date and whether a record came from OCR.
+
+Choose from 45 bundled currencies by name, code or symbol, or set up your own.
+
+### Budgets and categories
+
+Set a monthly spending limit, then split it into optional category budgets. The limit is kept separate from income; when you add income, you choose whether it also raises that month's limit. Totals are rebuilt from your saved transactions whenever you add, edit or delete one, so they stay correct.
+
+Create your own categories with icons. Making a new category keeps the transaction you were filling in, and if you turn the option on, an unfinished transaction is also kept when you leave the screen.
+
+### Analytics and the gauge
+
+Analytics shows cash flow, your remaining allowance, category charts and a spending gauge. The gauge stays readable when your budget is zero or you've gone over it. Home, Analytics, the tutorial and Budster's expressions all use the same gauge colours.
+
+### Themes and accessibility
+
+Pick Light, Dark, Material You, true OLED black or your own colours, and preview them before you leave the screen. The gauge comes in the default green, dark yellow and red, a colour-blind-friendly blue, orange and purple, or a custom palette. Touch targets are large throughout.
+
+### Tutorial and achievements
+
+A six-part tutorial walks you through the real Home, Budget, Transaction, OCR, Analytics and Achievement screens, and you can replay it from Settings. Achievements include a streak for staying on budget three months in a row.
+
+### Offline receipt reading (OCR edition)
+
+Take a photo of a receipt or pick one from your gallery. Budget Buddy reads it on the phone with Google's bundled ML Kit text recognition, then suggests the merchant, date, total, items and a likely category. Nothing is filled in until you've seen it: you can change any field before saving, and Settings has an optional extra confirmation step.
+
+The receipt copy and recognised text are stored in the app's private storage. The model ships inside the APK, so nothing is downloaded and the app needs no internet access. The No OCR edition leaves recognition out but can still attach receipt photos.
 
 ## Why Budget Buddy exists
 
-Money tools should be understandable at a glance. Budget Buddy combines plain-language totals, colour-matched spending feedback, charts, category budgets, and Budster's expressions so that a user does not need to decode a spreadsheet before making a decision. Accessibility is part of the design: the app includes readable light, dark, Material You, OLED black, and custom themes; a colour-blind-friendly gauge palette; searchable currencies; large touch targets; and a replayable, hands-on tutorial.
+Money tools should make sense at a glance. Budget Buddy puts plain totals, colour-matched spending feedback, charts, category budgets and Budster's expressions together, so you don't have to decode a spreadsheet before making a decision. Accessibility is part of the design, from the themes and colour-blind-friendly gauge to searchable currencies and a tutorial you can replay.
 
-Offline is not a fallback mode. It is the product design. Profiles, transactions, budgets, categories, receipts, recognised text, settings, and achievements live in Android's private app storage and remain usable with airplane mode enabled.
+Offline isn't a fallback mode. Profiles, transactions, budgets, categories, receipts, settings and achievements all live in Android's private app storage and keep working in airplane mode.
 
-## Choose your Budget Buddy
+## Choose your edition
 
-Both editions are named **Budget Buddy** on the phone and can be installed together because they use separate Android package identities.
+Both editions are called **Budget Buddy** on the phone. Each has its own app identity, so they can be installed side by side and keep separate data.
 
-| Edition | Best for | Receipt workflow | Storage footprint |
-| --- | --- | --- | --- |
-| **Budget Buddy OCR** (`com.budgetbuddy`) | Faster reading and writing of receipt-based expenses | Take or choose a receipt photo, receive on-device suggestions, review them, then save | Larger because the offline text-recognition model is bundled into the APK |
-| **Budget Buddy No OCR** (`com.budgetbuddy.manual`) | Maximum manual control and a smaller installation | Enter transaction details manually; receipt photos can still be attached | Smaller because it does not contain the recognition model or OCR pipeline |
+| Edition | Android | Receipts | Size | Best fit |
+| --- | --- | --- | --- | --- |
+| [OCR](https://github.com/Mi-N-512/Budget-Buddy/releases/latest) | 8.1+ | Reads the photo on the phone and suggests the details | Larger, because the recognition model is included | Quicker entry when you keep receipts |
+| [No OCR](https://github.com/Mi-N-512/Budget-Buddy/releases/latest) | 8.1+ | Attach a photo and type the details yourself | Smaller | Full manual control and a smaller install |
 
-The finance engine, themes, analytics, budgets, categories, tutorial, achievements, local storage protections, and visual design are shared. Receipt photos themselves use device storage in either edition when attached.
+Everything else is shared: budgets, analytics, themes, the tutorial and achievements. The OCR edition's package is `com.budgetbuddy` and No OCR's is `com.budgetbuddy.manual`.
 
-## See 3.0 in action
+## Get started
 
-<p align="center">
-  <img src="docs/screenshots/home-light.png" alt="Budget Buddy Home screen in light mode showing cash flow, the monthly spending limit, and recent records" width="48%" />
-  <img src="docs/screenshots/analytics-light.png" alt="Budget Buddy Analytics screen showing the spending gauge and matching green, dark yellow, and red chart colours" width="48%" />
-</p>
-<p align="center">
-  <img src="docs/screenshots/themes-colours.png" alt="Themes and colours screen with Light, Dark, Material You, OLED black, Custom, and accessible gauge choices" width="48%" />
-  <img src="docs/screenshots/ocr-tutorial.png" alt="OCR tutorial showing offline receipt suggestions for merchant, date, total, category, and items" width="48%" />
-</p>
+1. Download `Budget-Buddy-OCR-v3.0-stable.apk` or `Budget-Buddy-No-OCR-v3.0-stable.apk` from [the latest release](https://github.com/Mi-N-512/Budget-Buddy/releases/latest). Only install APKs attached to this repository's releases.
+2. If you like, check the file against the SHA-256 checksums in the [3.0 release notes](docs/RELEASE_NOTES_3.0_STABLE.md#sha-256-checksums).
+3. Open the APK and tap **Install**. Android may ask you to allow installs from your browser or files app, and may warn that the app didn't come from the Play Store. That's normal for a direct download.
+4. Open **Budget Buddy**, set up your local profile and currency, and follow the tutorial.
 
-## Install 3.0 Stable
+3.0 doesn't copy records from the old `com.example.budgetbuddy` builds, so a fresh install is recommended.
 
-1. Open the [Budget Buddy 3.0 Stable release](https://github.com/MLN-WORK/Budget-Buddy/releases/tag/v3.0.0-stable) on an Android phone.
-2. Download **Budget-Buddy-OCR-v3.0-stable.apk** or **Budget-Buddy-No-OCR-v3.0-stable.apk** under **Assets**.
-3. If Android asks, allow the browser or file manager to install apps from that source.
-4. Open the APK, tap **Install**, then open **Budget Buddy** and complete the local setup.
+## Permissions: what it needs and why
 
-Android may warn that the APK came from outside the Play Store. That is normal for a direct release download. Install only assets attached to this repository's official release. Android 8.1 or newer is required. Camera access is optional; denying it does not block manual budgeting or gallery selection.
-
-The two 3.0 editions install side by side. They keep separate local data and do not copy records from old `com.example.budgetbuddy` builds. A fresh install is recommended for this stable transition.
-
-## What 3.0 can do
-
-- Open directly into a private local profile—no sign-in, email, password, cloud verification, subscription, or remote database.
-- Track income and expenses with dates, categories, amounts, notes, and optional local receipt images.
-- Keep the monthly spending limit separate from income, with an explicit choice to add an income record to that month's limit.
-- Recalculate budget totals after transaction additions, edits, and deletions.
-- Create custom categories and allocate optional category budgets beneath the main monthly limit.
-- Show cash flow, remaining allowance, transaction history, category charts, and a bounded spending gauge that remains safe when the budget is zero or exceeded.
-- Match Home, Analytics, tutorial examples, Budster, and chart feedback to the same selected gauge colours.
-- Use Light, Dark, Material You, true OLED black, or Custom colours and preview changes live before leaving the theme screen.
-- Choose the default green/dark-yellow/red gauge, a colour-blind-accessible blue/orange/purple gauge, or a custom palette.
-- Search 45 bundled currencies by name, ISO code, or symbol, or define a custom currency.
-- Filter history by transaction type, OCR source, and date; tap a record for details or editing and press and hold to delete it.
-- Preserve an unfinished transaction only when the user enables that preference; category creation safely keeps the current form.
-- Follow a six-part interactive tutorial using the real Home, Budget, Transaction, OCR, Analytics, and Achievement screens, then replay it from Settings.
-- Earn clearly labelled achievements, including a three-distinct-consecutive-month budgeting streak.
-
-## How offline OCR works
-
-The OCR edition is designed to shorten data entry without turning a receipt into an automatic financial decision.
-
-1. **Capture or choose.** The user takes a photo through Android's camera flow or selects one through Android's privacy-friendly photo picker.
-2. **Normalise safely.** Budget Buddy decodes the image away from the main screen, corrects its orientation, scales oversized input to a bounded size, writes a local JPEG atomically, and validates the result before attachment. Replaced, cancelled, failed, and unfinished copies are cleaned up.
-3. **Recognise on the device.** A bundled Google ML Kit Latin text-recognition model reads the image locally. The app has no internet permission and does not need to download a recognition model at runtime.
-4. **Turn text into suggestions.** Budget Buddy examines receipt lines for merchant, date, total, and useful item text. It favours prominent text near the top for the merchant, applies date and currency-aware parsing, and uses the scan date when a receipt date is missing.
-5. **Suggest a category.** A local classifier maps recognised words to a likely category. OCR records also carry a protected internal OCR identity, so renaming the visible OCR label does not break existing records, budgets, icons, or filters.
-6. **Keep the person in control.** Suggestions fill a preview or transaction form; the user can inspect and change every field before saving. An optional Settings switch adds a separate confirmation step before suggestions are applied.
-7. **Store locally.** The approved transaction, receipt copy, and recognised text stay inside the app's private storage. The camera or gallery original is not uploaded by Budget Buddy.
-
-The No OCR edition omits steps 3–6 and keeps the same image-attachment and manual transaction tools.
-
-## From the first prototype to a fully offline app
-
-### The original online era
-
-Budget Buddy began as a fully online database-driven prototype. It depended on online account and database features and had no usable offline capability. It also had one fixed visual style, no theme studio, no OCR option, no guided tutorial, fewer safety checks around receipts and budgets, and no choice between app editions. That legacy implementation predates the retained offline Git history in this repository.
-
-The project was deliberately rebuilt around a different promise: a budgeting companion should still work when the network is unavailable, and private day-to-day finance data should not need to leave the device. The online account, remote database, and abandoned service configuration were removed rather than left dormant.
-
-### Offline release history
-
-| Version | What changed | How it was tackled |
+| Access | Needed? | What it is used for |
 | --- | --- | --- |
-| **2.0 — Offline reset** | Replaced the online account/database flow with a local profile, local transactions, receipt attachments, edit/delete, budget rebuilding, and achievements. | Made app-private storage the source of truth and rebuilt onboarding around **Continue offline**. |
-| **2.1 — Interface hardening** | Added the launcher identity, better contrast, immersive layout, consistent navigation, category selectors, and safer camera behaviour. | Standardised shared screen controls and upgraded Android tooling and APIs. |
-| **2.2 — Meet Budster** | Introduced Budster, dark mode, first-run onboarding, fixed navigation, safer over-budget analytics, and first-Home camera permission. | Centralised companion thresholds and moved permission education into the real user journey. |
-| **2.3 — Receipt reliability** | Rebuilt capture, gallery selection, validation, storage cleanup, Home navigation, and achievement badges. | Added bounded image handling, app-owned copies, lifecycle cleanup, and dedicated locked/unlocked badge states. |
-| **2.4 — Currency and gauge consistency** | Added Euro as the default, 45 searchable offline currencies, robust receipt processing, and aligned gauge/Budster thresholds. | Introduced a local currency catalogue and one shared spending-status calculation. |
-| **2.5 — Safer budgeting** | Fixed the receipt-placeholder crash, counted uncategorised expenses, clarified the maximum budget, added categories, made income categories optional, introduced Material You, and polished layouts. | Covered empty and uncategorised states explicitly and separated required expense data from optional income metadata. |
-| **2.6 — Theme studio** | Added Light, Dark, Material You, OLED black, Custom colours, exact gauge palettes, and a gauge needle. | Centralised appearance preferences and exposed live theme and analytics previews. |
-| **2.6.1 — Theme lifecycle fix** | Stabilised Material You and made OLED genuinely black. | Re-applied appearance at the correct activity lifecycle point and separated OLED surfaces from ordinary dark surfaces. |
-| **2.7 — Data integrity and flow** | Allowed a monthly limit without category budgets, recalculated totals from transactions, protected transaction drafts, added curated icons, and moved to `com.budgetbuddy`. | Rebuilt totals from saved records instead of fragile deltas and gave navigation an explicit draft policy. |
-| **3.0 Stable — Two editions, one mission** | Added bundled offline OCR, OCR review and classification, detailed record views, the full interactive tutorial, side-by-side OCR/No OCR packages, theme-live-update repairs, OLED layout stability, exact gauge colour propagation, a darker visible neutral yellow, security hardening, and full class documentation. | Split optional recognition from the shared finance app, consolidated all status colours into one source, tested tutorial examples on a real Android runtime, constrained exported components and networking, and documented each class's role and relationships. |
+| Camera | Optional | Taking receipt photos. Saying no doesn't block manual entry or picking a photo from your gallery. |
+| Photo picker | No permission | Android's photo picker only shares the photo you choose. |
 
-## Privacy and security
+Neither edition asks for internet or network access; those permissions are removed from the final app even when a library asks for them. There's no account, cloud sync, advertising, analytics or remote database.
 
-- Neither edition requests `INTERNET` or `ACCESS_NETWORK_STATE`; transitive declarations are explicitly removed from the final manifest.
-- There is no Firebase, advertising SDK, remote database, cloud synchronisation, account token, analytics endpoint, or supported secret configuration.
-- Android cloud backup and device-to-device data extraction are disabled with `allowBackup=false` and restrictive backup rules.
+Your data is protected by Android's app sandbox. Cloud backup and device-to-device transfer are turned off, so clearing the app's data or uninstalling an edition removes its records and receipt copies for good.
+
+<details>
+<summary>More on privacy and security</summary>
+
 - Cleartext traffic is disabled, even though the app has no network permission.
-- Only the launcher activity is exported. Internal activities and the receipt file provider are not exported, and receipt URIs are granted only to the chosen camera handler for the required operation.
-- Release builds disable debugging and enable code shrinking and resource shrinking.
-- Receipt decoding is bounded, file writes are atomic, invalid files are rejected, and abandoned app-owned copies are deleted.
-- Amounts, dates, names, category labels, currency values, colours, and image inputs are validated before persistence or use.
-- Keys, signing stores, local SDK paths, environment files, logs, build output, and APKs are excluded from source control.
-- Every Kotlin class has a start/end documentation block naming the class and related parent/child collaborators, what it does, and what other classes need to know, with focused comments around non-obvious code.
+- Only the launcher screen is exported. Internal screens and the receipt file provider are not, and a receipt's address is shared only with the camera app you use, only for that photo.
+- Release builds turn off debugging and shrink code and resources.
+- Receipt images are decoded at a limited size and written atomically, invalid files are rejected, and abandoned copies are deleted.
+- Amounts, dates, names, categories, currencies, colours and images are checked before they're saved or used.
+- Signing keys, local SDK paths, environment files, logs, build output and APKs are kept out of source control.
 
-Google's bundled ML Kit performs receipt text recognition on-device. Google documents that input and output content is not sent to its servers, while its SDK terms allow collection of technical performance and API-usage metrics; the OCR edition discloses that distinction in Settings.
+Google's ML Kit, used by the OCR edition, reads receipts on the phone. Google says the images and recognised text aren't sent to its servers, but its SDK terms allow it to collect technical performance and usage metrics. The OCR edition explains this in Settings.
 
-App data is protected by Android's application sandbox. Clearing app data or uninstalling an edition removes that edition's local records and receipt copies.
+</details>
 
-## For developers
+## Open and build the project
 
-Budget Buddy is a single-module native Android application written in Kotlin with Activity-based screens and XML layouts.
+Open the folder containing `settings.gradle.kts` in Android Studio. Use **JDK 17** or newer, install Android SDK Platform 36 and let Gradle sync. Gradle needs internet access to download dependencies; the app itself doesn't.
 
-### Source editions
-
-- [`main`](https://github.com/MLN-WORK/Budget-Buddy/tree/main) contains the OCR edition.
-- [`no-ocr`](https://github.com/MLN-WORK/Budget-Buddy/tree/no-ocr) contains the smaller manual edition.
-
-### Technology
-
-- Kotlin 2.1, Android SDK 36, minimum SDK 27, and JDK 17 +
-- Gradle 8.14.5, Android Gradle Plugin 8.13.2, and Kotlin DSL
-- AndroidX, Material Components, View Binding, and Data Binding
-- MPAndroidChart and SpeedView for offline visualisations
-- Glide for local receipt images
-- Bundled Google ML Kit Text Recognition in the OCR edition only
-- JUnit 4 and AndroidX Espresso tests
-
-### Important structure
-
-```text
-app/src/main/java/com/budgetbuddy/
-  WelcomeActivity.kt                 Secure launcher and first-run routing
-  ProfileActivity.kt                 Local profile, currency, OCR, and app settings
-  ThemeColorsActivity.kt             Live theme and gauge-colour studio
-  AppearancePreferences.kt           Central theme and status-palette state
-  TutorialFlow.kt                    Real-screen interactive tutorial coordinator
-  LocalDataStore.kt                  App-private persistence and budget rebuilding
-  FinanceCalculator.kt               Pure finance calculations
-  MainActivity.kt                    Home dashboard and records
-  TransactionActivity.kt             Add/edit transactions and attachments
-  AddImageActivity.kt                Camera/photo-picker and OCR entry screen
-  ReceiptStorage.kt                  Receipt validation and lifecycle cleanup
-  ReceiptImageNormalizer.kt          Bounded orientation and JPEG processing
-  ReceiptOcrScanner.kt               Bundled on-device recognition (OCR branch)
-  ReceiptParser.kt                   Receipt suggestion extraction (OCR branch)
-  ReceiptCategoryClassifier.kt       Local category suggestions (OCR branch)
-  TransactionDetailActivity.kt       Readable single-record view
-  TransactionHistoryActivity.kt      Filter, edit, and delete history
-  BudgetActivity.kt                  Monthly and category budgets
-  AnalyticsActivity.kt               Charts, gauge, and status feedback
-  AnalyticsCalculator.kt             Bounded gauge calculations and colours
-  AchievementActivity.kt             Achievement progress and badges
-```
-
-### Build and test
-
-Development dependency downloads require internet access; the resulting app does not. With Android SDK 36 configured in an ignored `local.properties` file:
+The two editions live on separate branches: [`main`](https://github.com/Mi-N-512/Budget-Buddy/tree/main) holds the OCR edition and [`no-ocr`](https://github.com/Mi-N-512/Budget-Buddy/tree/no-ocr) the manual one. The Gradle wrapper is included.
 
 ```powershell
+# Unit tests and lint
 .\gradlew.bat testDebugUnitTest
 .\gradlew.bat lintDebug
+
+# Release APK
 .\gradlew.bat assembleRelease
-.\gradlew.bat assembleDebugAndroidTest
+
+# Instrumented tests on a connected phone or emulator
 .\gradlew.bat connectedDebugAndroidTest
 ```
 
-Use `./gradlew` on macOS or Linux. No runtime environment variables, server credentials, database migrations, datasets, or downloadable models are required.
+Use `./gradlew` on macOS or Linux. No environment variables, server credentials or downloaded models are needed.
 
-## Licence and release integrity
+It's written in Kotlin with Activity-based screens and XML layouts, using AndroidX, Material Components, MPAndroidChart and SpeedView for the charts and gauge, Glide for receipt images, and ML Kit text recognition in the OCR edition.
 
-Release APKs are attached to the [official GitHub Releases page](https://github.com/MLN-WORK/Budget-Buddy/releases). SHA-256 checksums are included in the 3.0 Stable release notes so a downloaded file can be verified before installation.
+Start reading the code at `WelcomeActivity.kt`, which routes the first run, and `LocalDataStore.kt`, which holds all saved data. Every class starts with a comment block that explains what it does, which classes it works with, and what other classes need to know about it.
+
+## Version 3.0 and what comes next
+
+3.0 brings everything above together: two editions, offline OCR, the theme studio, the interactive tutorial and security hardening. See the [changelog](CHANGELOG.md) for how Budget Buddy got here, from the original online prototype to the offline 2.x releases.
+
+Ideas I would like to include in future versions:
+
+- **Backup and restore** to a local file, so records can move to a new phone without a cloud account.
+- **Export to CSV** for spreadsheets.
+- **Recurring transactions** for rent, subscriptions and salary.
+- **A Home screen widget** showing what's left this month.
+- **More languages**, with the interface ready for translation.
+
+Suggestions and bug reports are welcome on the [issue tracker](https://github.com/Mi-N-512/Budget-Buddy/issues).
