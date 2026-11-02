@@ -6,7 +6,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-3.0-46b793" alt="Version 3.0">
+  <img src="https://img.shields.io/badge/version-3.1-46b793" alt="Version 3.1">
   <img src="https://img.shields.io/badge/Android-8.1%2B-3ddc84?logo=android&logoColor=white" alt="Android 8.1 and newer">
   <img src="https://img.shields.io/badge/editions-OCR%20%C2%B7%20No%20OCR-6e7681" alt="Editions: OCR and No OCR">
   <img src="https://img.shields.io/badge/works-offline-46b793" alt="Works offline">
@@ -22,9 +22,9 @@
   <a href="#open-and-build-the-project">Build</a>
 </p>
 
-Budget Buddy is an Android budgeting app that works completely offline. It shows how your money is doing this month, where it's going, and how much is left, with Budster the Budgeter reacting as you go. There's no account to create, and your records never leave the phone.
+Budget Buddy is an Android budgeting app that works completely offline. It shows how your money is doing this month, where it's going, and how much is left, with Budster the Budgeter reacting as you go (sometimes a little dramatically). There's no account to create, and your records never leave the phone.
 
-Version 3.0 is free to [download from GitHub Releases](https://github.com/Mi-N-512/Budget-Buddy/releases/latest).
+Version 3.1 is free to [download from GitHub Releases](https://github.com/Mi-N-512/Budget-Buddy/releases/latest). It adds category limits on Analytics and repeating transactions; see [what's new](docs/RELEASE_NOTES_3.1.md).
 
 To get updates automatically, add it to [Obtainium](https://github.com/ImranR98/Obtainium), which installs straight from GitHub Releases. When it asks which APK to use, pick your edition.
 
@@ -49,6 +49,14 @@ To get updates automatically, add it to [Obtainium](https://github.com/ImranR98/
     <td align="center"><b>Themes and colours.</b> Change the theme and gauge palette and see them update live.</td>
     <td align="center"><b>Receipts.</b> The OCR edition reads a receipt on the phone and suggests the details for you to check.</td>
   </tr>
+  <tr>
+    <td align="center"><img src="docs/screenshots/category-limits.png" width="300" alt="Category limits card on Analytics: Entertainment over its limit in red, Housing and Dining nearly used up, Groceries in yellow and Transport in green, each with a short line from Budster"></td>
+    <td align="center"><img src="docs/screenshots/repeating-transactions.png" width="300" alt="Transaction form with the repeat menu open: does not repeat, every week, every month or every year"></td>
+  </tr>
+  <tr>
+    <td align="center"><b>Category limits.</b> Every category against its own little budget, with Budster's honest opinion.</td>
+    <td align="center"><b>Repeating transactions.</b> Set the rent once and Budster adds it every month.</td>
+  </tr>
 </table>
 
 ## Main features
@@ -63,11 +71,17 @@ Choose from 45 bundled currencies by name, code or symbol, or set up your own.
 
 Set a monthly spending limit, then split it into optional category budgets. The limit is kept separate from income; when you add income, you choose whether it also raises that month's limit. Totals are rebuilt from your saved transactions whenever you add, edit or delete one, so they stay correct.
 
+Analytics has a **Category limits** card for each month: how much of every category's limit you've used, coloured like the gauge, from "Plenty of wiggle room!" all the way to "Over by €15.00. Budster needs a little lie-down."
+
 Create your own categories with icons. Making a new category keeps the transaction you were filling in, and if you turn the option on, an unfinished transaction is also kept when you leave the screen.
+
+### Repeating transactions
+
+Rent, salary and subscriptions can repeat every week, month or year; pick it under the date when you add one. When the day comes round, Budster adds the record and tells you. Start one in the past and the missed dates are filled in at once. Copies don't take the receipt photo, and a copy you delete stays deleted.
 
 ### Analytics and the gauge
 
-Analytics shows cash flow, your remaining allowance, category charts and a spending gauge. The gauge stays readable when your budget is zero or you've gone over it. Home, Analytics, the tutorial and Budster's expressions all use the same gauge colours.
+Analytics shows cash flow, your remaining allowance, category charts and a spending gauge. The category chart gives every category its own labelled bar, biggest spender first. The gauge stays readable when your budget is zero or you've gone over it. Home, Analytics, the tutorial and Budster's expressions all use the same gauge colours.
 
 ### Themes and accessibility
 
@@ -102,12 +116,12 @@ Everything else is shared: budgets, analytics, themes, the tutorial and achievem
 
 ## Get started
 
-1. Download `Budget-Buddy-OCR-v3.0-stable.apk` or `Budget-Buddy-No-OCR-v3.0-stable.apk` from [the latest release](https://github.com/Mi-N-512/Budget-Buddy/releases/latest). Only install APKs attached to this repository's releases.
-2. If you like, check the file against the SHA-256 checksums in the [3.0 release notes](docs/RELEASE_NOTES_3.0_STABLE.md#sha-256-checksums).
+1. Download `Budget-Buddy-OCR-v3.1.apk` or `Budget-Buddy-No-OCR-v3.1.apk` from [the latest release](https://github.com/Mi-N-512/Budget-Buddy/releases/latest). Only install APKs attached to this repository's releases.
+2. If you like, check the file against the SHA-256 checksums in the [3.1 release notes](docs/RELEASE_NOTES_3.1.md#sha-256-checksums).
 3. Open the APK and tap **Install**. Android may ask you to allow installs from your browser or files app, and may warn that the app didn't come from the Play Store. That's normal for a direct download.
 4. Open **Budget Buddy**, set up your local profile and currency, and follow the tutorial.
 
-3.0 doesn't copy records from the old `com.example.budgetbuddy` builds, so a fresh install is recommended.
+Already on 3.0? Install 3.1 over it and everything stays put; just keep the same edition. Records from the old `com.example.budgetbuddy` builds aren't copied across.
 
 ## Permissions: what it needs and why
 
