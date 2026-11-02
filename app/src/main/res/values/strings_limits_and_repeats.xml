@@ -11,6 +11,11 @@
     <string name="category_limit_over">Over by %1$s. Budster needs a little lie-down.</string>
     <string name="category_limit_row_description">%1$s: %2$d%% of its limit used</string>
 
+    <!-- Category spending chart on Analytics -->
+    <string name="chart_spent_label">Spent</string>
+    <string name="chart_left_label">Left of limit</string>
+    <string name="chart_empty">No spending here yet. Budster\'s wallet is having a nap.</string>
+
     <!-- Repeating transactions -->
     <string name="repeat_none">Does not repeat</string>
     <string name="repeat_weekly">Repeats every week</string>
