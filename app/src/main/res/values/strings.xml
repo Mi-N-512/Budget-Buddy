@@ -344,8 +344,8 @@
     <string name="not_saving">Looks like you`re not gonna save much</string>
     <string name="way_over_budget">You`re way over budget</string>
     <string name="budget_mood_happy">Budster is happy — at least half of your spending limit remains</string>
-    <string name="budget_mood_neutral">Budster is neutral — between 15%% and 49%% of your spending limit remains</string>
-    <string name="budget_mood_angry">Budster is angry — less than 15%% of your spending limit remains</string>
+    <string name="budget_mood_neutral" formatted="false">Budster is neutral — between 15% and 49% of your spending limit remains</string>
+    <string name="budget_mood_angry" formatted="false">Budster is angry — less than 15% of your spending limit remains</string>
     <string name="analytics_no_budget_mood">Set a monthly spending limit to see how Budster feels</string>
     <string name="you_only_wanna_spend">Your category budgets use %.0f%% of your monthly spending limit</string>
     <string name="category_budget_percentage">Your category budgets use %1$.2f%% of your monthly spending limit</string>
