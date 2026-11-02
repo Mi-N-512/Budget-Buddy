@@ -2,6 +2,13 @@
 
 Every offline release has a matching tag in this repository. APKs for the current release are on the [Releases page](https://github.com/Mi-N-512/Budget-Buddy/releases/latest).
 
+## 3.1: Budster gets a calendar and a magnifying glass
+
+- Added a Category limits card to Analytics: spending against each category's own limit, coloured like the gauge, with a line from Budster.
+- Added repeating transactions (weekly, monthly or yearly). Budster adds each one when its date comes round, fills in missed dates, and never re-adds a copy you deleted.
+- Rebuilt the category spending chart so every category is labelled, sorted and coloured by its limit.
+- Fixed cut-off text on Analytics and the doubled percent signs in Budster's mood line.
+
 ## 3.0 Stable: two editions, one offline app
 
 - Added bundled offline OCR in a separate OCR edition, with receipt review, local category suggestions and a detailed record view.
