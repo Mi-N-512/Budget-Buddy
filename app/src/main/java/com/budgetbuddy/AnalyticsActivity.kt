@@ -17,6 +17,7 @@ import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
+import com.github.mikephil.charting.formatter.ValueFormatter
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -245,7 +246,7 @@ class AnalyticsActivity : BaseActivity() {
 
         val parsedMonth = runCatching { displayedFormat.parse(selectedMonth) }.getOrNull()
         if (parsedMonth == null) {
-            setupBarGraph(emptyList(), emptyList())
+            setupBarGraph(emptyList())
             return
         }
         val calendar = Calendar.getInstance()
@@ -257,157 +258,159 @@ class AnalyticsActivity : BaseActivity() {
         calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH))
         val lastDay = outputFormat.format(calendar.time)
 
-        val budgetCategories = localData.getBudget(selectedMonth)?.categories.orEmpty()
-            .mapValues { (_, category) -> Pair(category.allocation.toFloat(), (category.amountSpent ?: 0.0).toFloat()) }
+        val budgetLimits = localData.getBudget(selectedMonth)?.categories.orEmpty()
+            .mapValues { (_, category) -> category.allocation }
+        val usingCustomRange = startDate.isNotBlank() && endDate.isNotBlank()
         val onTransactionFetched: (List<Transaction>) -> Unit = { transactions ->
             val totals = transactions.filterNot(Transaction::isIncome)
                 .groupBy(Transaction::categoryId)
                 .mapValues { (_, values) -> values.sumOf(Transaction::amount) }
-            val allCategories = (totals.keys + budgetCategories.keys).distinct()
-            val stackedValues = allCategories.map { category ->
-                val spent = totals[category]?.toFloat() ?: 0f
-                val allocation = budgetCategories[category]?.first ?: 0f
-                floatArrayOf(spent, maxOf(0f, allocation - spent))
-            }
-            val categoryLabels = allCategories.map(localData::categoryDisplayName)
-            if (showMaxInfo) {
-                setupStackedBarGraph(categoryLabels, stackedValues)
-            } else {
-                setupBarGraph(totals.keys.map(localData::categoryDisplayName), totals.values.map(Double::toFloat))
-            }
+            // Biggest spender first. A horizontal chart draws index 0 at the bottom, so the
+            // list is reversed to put the biggest bar at the top where people start reading.
+            val bars = (totals.keys + budgetLimits.filterValues { it > 0.0 }.keys).distinct()
+                .map { id ->
+                    CategoryBar(
+                        label = localData.categoryDisplayName(id),
+                        spent = totals[id] ?: 0.0,
+                        // Limits belong to one month; a custom date range has no fair limit to compare with.
+                        limit = budgetLimits[id]?.takeIf { it > 0.0 && !usingCustomRange }
+                    )
+                }
+                .filter { showMaxInfo || it.spent > 0.0 }
+                .sortedByDescending(CategoryBar::spent)
+                .reversed()
+            if (showMaxInfo) setupStackedBarGraph(bars) else setupBarGraph(bars)
         }
         val onError: (Exception) -> Unit = { Log.e("BarGraph", "Error loading local transactions", it) }
-        if (startDate.isNotBlank() && endDate.isNotBlank()) {
+        if (usingCustomRange) {
             repo.fetchInRange(startDate, endDate, onTransactionFetched, onError)
         } else {
             repo.fetchInRange(firstDay, lastDay, onTransactionFetched, onError)
         }
     }//end load bar graph data
 
+    /** One row of the category chart; limit is null when the category has none to compare with. */
+    private data class CategoryBar(val label: String, val spent: Double, val limit: Double?)
+
     /*This code uses MPAndroidChart (https://github.com/PhilJay/MPAndroidChart)
    * Licensed under the Apache License, Version 2.0
    * Copyright 2015 Philipp Jahoda*/
-    //shows just plain category expenditure
-    private fun setupBarGraph(categories: List<String>, amounts: List<Float>){
+    //shows just plain category expenditure, coloured like the Category limits card
+    private fun setupBarGraph(bars: List<CategoryBar>) {
         val barGraph = binding.categoryBarGraph
         barGraph.clear()
-        val entries = ArrayList<BarEntry>()
-        for(i in amounts.indices){
-            entries.add(BarEntry(i.toFloat(), amounts[i]))
+        if (bars.isEmpty()) {
+            showEmptyChart()
+            return
         }
-        val dataSet = BarDataSet(entries, "Amount Spent")
-        val chartTextColor = MaterialColors.getColor(binding.root, R.attr.budgetTextColor)
-
-        // Analytics bars intentionally reuse the currently selected gauge palette.
-        val colours = getBarColours()
-        val barColours = ArrayList<Int>()
-        for(i in entries.indices){
-            barColours.add(colours[i % colours.size])
+        val entries = bars.mapIndexed { index, bar -> BarEntry(index.toFloat(), bar.spent.toFloat()) }
+        val dataSet = BarDataSet(entries, getString(R.string.chart_spent_label))
+        val palette = localData.gaugePalette
+        val neutral = MaterialColors.getColor(binding.root, R.attr.budgetPrimaryColor)
+        dataSet.colors = bars.map { bar ->
+            bar.limit?.let { AnalyticsCalculator.gaugeColor(AnalyticsCalculator.spentPercentageExact(bar.spent, it), palette) }
+                ?: neutral
         }
-        dataSet.colors = barColours
-        dataSet.setDrawValues(true)
-        dataSet.valueTextColor = chartTextColor
-        dataSet.valueTextSize = 12f
-
-        val barData = BarData(dataSet)
-        barData.barWidth = 0.5f
-        barGraph.data = barData
-        barGraph.setFitBars(false)
-        barGraph.fitsSystemWindows
-        barGraph.animateY(1000)
-
-        //x-axis -- values
-        val xAxis = binding.categoryBarGraph.xAxis
-        xAxis.position = XAxis.XAxisPosition.BOTTOM
-        xAxis.setDrawGridLines(false)
-        xAxis.textSize = 15f
-        xAxis.textColor = MaterialColors.getColor(binding.root, R.attr.budgetTextColor)
-        xAxis.typeface = ResourcesCompat.getFont(applicationContext, R.font.outfit_regular)
-        xAxis.granularity = 1f
-        xAxis.valueFormatter = IndexAxisValueFormatter(categories)
-
-        //y axis -- category labels
-        val yAxis = binding.categoryBarGraph.axisLeft
-        yAxis.setDrawGridLines(false)
-        yAxis.textSize = 15f
-        yAxis.textColor = MaterialColors.getColor(binding.root, R.attr.budgetTextColor)
-        yAxis.typeface = ResourcesCompat.getFont(applicationContext, R.font.outfit_regular)
-        yAxis.axisMinimum = 0f
-        yAxis.granularity = 1f
-
-        //disable right y-axis
-        barGraph.axisRight.isEnabled = false
-        barGraph.legend.isEnabled = false
-        barGraph.description.isEnabled = false
-
-        barGraph.isDragEnabled = true
-        barGraph.setScaleEnabled(true)
-        barGraph.setTouchEnabled(true)
-        barGraph.isFullyZoomedOut
-
-
-
-
-        //refresh
-        barGraph.invalidate()
+        styleChart(dataSet, bars.map(CategoryBar::label), showLegend = false)
     }
 
     /*This code uses MPAndroidChart (https://github.com/PhilJay/MPAndroidChart)
   * Licensed under the Apache License, Version 2.0
   * Copyright 2015 Philipp Jahoda*/
-    //shows both budget maximum, and plain transactions
-    private fun setupStackedBarGraph(categories: List<String>, stackedValues: List<FloatArray>){
+    //shows each category's spending stacked against what is left of its limit
+    private fun setupStackedBarGraph(bars: List<CategoryBar>) {
         val barGraph = binding.categoryBarGraph
         barGraph.clear()
-
-        val entries = ArrayList<BarEntry>()
-        for (i in stackedValues.indices) {
-            entries.add(BarEntry(i.toFloat(), stackedValues[i]))
+        if (bars.isEmpty()) {
+            showEmptyChart()
+            return
         }
-
-        val dataSet = BarDataSet(entries, "[Spending & Budget Usage]")
-        val chartTextColor = MaterialColors.getColor(binding.root, R.attr.budgetTextColor)
+        val entries = bars.mapIndexed { index, bar ->
+            val left = bar.limit?.let { (it - bar.spent).coerceAtLeast(0.0) } ?: 0.0
+            BarEntry(index.toFloat(), floatArrayOf(bar.spent.toFloat(), left.toFloat()))
+        }
+        val dataSet = BarDataSet(entries, "")
         val gaugePalette = localData.gaugePalette
-        dataSet.setColors(
-            gaugePalette.bad,
-            gaugePalette.good
-        ) // spent, remaining
+        dataSet.setColors(gaugePalette.bad, gaugePalette.good) // spent, remaining
+        dataSet.stackLabels = arrayOf(getString(R.string.chart_spent_label), getString(R.string.chart_left_label))
+        styleChart(dataSet, bars.map(CategoryBar::label), showLegend = true)
+    }
+
+    /** Shared look for both chart modes: every category labelled, sized to fit, no hidden zoom. */
+    private fun styleChart(dataSet: BarDataSet, labels: List<String>, showLegend: Boolean) {
+        val barGraph = binding.categoryBarGraph
+        val chartTextColor = MaterialColors.getColor(binding.root, R.attr.budgetTextColor)
+        val font = ResourcesCompat.getFont(applicationContext, R.font.outfit_regular)
+        val symbol = localData.currencySymbol
         dataSet.setDrawValues(true)
         dataSet.valueTextColor = chartTextColor
-        dataSet.valueTextSize = 12f
-        dataSet.stackLabels = arrayOf("Spent", "Remaining to Max")
+        dataSet.valueTextSize = 13f
+        dataSet.valueTypeface = font
+        dataSet.valueFormatter = object : ValueFormatter() {
+            override fun getFormattedValue(value: Float): String =
+                if (value <= 0f) "" else getString(R.string.money_amount, symbol, value.toDouble())
+        }
 
         val barData = BarData(dataSet)
-        barData.barWidth = 0.5f
-
+        barData.barWidth = 0.6f
         barGraph.data = barData
         barGraph.setFitBars(true)
-        barGraph.animateY(1000)
 
-        val xAxis = barGraph.xAxis
-        xAxis.position = XAxis.XAxisPosition.BOTTOM
-        xAxis.setDrawGridLines(false)
-        xAxis.valueFormatter = IndexAxisValueFormatter(categories)
-        xAxis.granularity = 1f
-        xAxis.labelRotationAngle = -30f
-        xAxis.textSize = 12f
-        xAxis.textColor = chartTextColor
+        // Grow with the number of categories so no label is skipped for lack of room.
+        val density = resources.displayMetrics.density
+        barGraph.layoutParams = barGraph.layoutParams.apply {
+            height = ((CHART_BASE_HEIGHT_DP + CHART_ROW_HEIGHT_DP * labels.size) * density).toInt()
+        }
 
-        val yAxis = barGraph.axisLeft
-        yAxis.setDrawGridLines(false)
-        yAxis.axisMinimum = 0f
-        yAxis.textColor = chartTextColor
-
+        barGraph.xAxis.apply {
+            position = XAxis.XAxisPosition.BOTTOM
+            setDrawGridLines(false)
+            textSize = 14f
+            textColor = chartTextColor
+            typeface = font
+            granularity = 1f
+            isGranularityEnabled = true
+            setLabelCount(labels.size, false)
+            axisMinimum = -0.5f
+            axisMaximum = labels.size - 0.5f
+            labelRotationAngle = 0f
+            valueFormatter = IndexAxisValueFormatter(labels)
+        }
+        barGraph.axisLeft.apply {
+            setDrawGridLines(false)
+            textSize = 12f
+            textColor = chartTextColor
+            typeface = font
+            axisMinimum = 0f
+            // Room on the right for the money label at the end of the longest bar.
+            spaceTop = 25f
+        }
         barGraph.axisRight.isEnabled = false
-        barGraph.legend.isEnabled = true
+        barGraph.legend.apply {
+            isEnabled = showLegend
+            textColor = chartTextColor
+            typeface = font
+            textSize = 13f
+        }
         barGraph.description.isEnabled = false
-
+        barGraph.setScaleEnabled(false)
+        barGraph.isDragEnabled = false
+        barGraph.setPinchZoom(false)
+        barGraph.setTouchEnabled(false)
+        barGraph.fitScreen()
+        barGraph.animateY(800)
         barGraph.invalidate()
     }
 
-    private fun getBarColours(): List<Int>{
-        val palette = localData.gaugePalette
-        return listOf(palette.good, palette.okay, palette.bad)
+    private fun showEmptyChart() {
+        val barGraph = binding.categoryBarGraph
+        barGraph.setNoDataText(getString(R.string.chart_empty))
+        barGraph.setNoDataTextColor(MaterialColors.getColor(binding.root, R.attr.budgetTextColor))
+        barGraph.setNoDataTextTypeface(ResourcesCompat.getFont(applicationContext, R.font.outfit_regular))
+        barGraph.layoutParams = barGraph.layoutParams.apply {
+            height = (CHART_EMPTY_HEIGHT_DP * resources.displayMetrics.density).toInt()
+        }
+        barGraph.invalidate()
     }
 
     //helper function to check if date range was selected
@@ -552,6 +555,12 @@ class AnalyticsActivity : BaseActivity() {
         return target
     }
 
+
+    companion object {
+        private const val CHART_BASE_HEIGHT_DP = 80
+        private const val CHART_ROW_HEIGHT_DP = 52
+        private const val CHART_EMPTY_HEIGHT_DP = 120
+    }
 }
 // End of class: AnalyticsActivity
 
