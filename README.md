@@ -158,16 +158,5 @@ It's written in Kotlin with Activity-based screens and XML layouts, using Androi
 
 Start reading the code at `WelcomeActivity.kt`, which routes the first run, and `LocalDataStore.kt`, which holds all saved data. Every class starts with a comment block that explains what it does, which classes it works with, and what other classes need to know about it.
 
-## Version 3.0 and what comes next
-
-3.0 brings everything above together: two editions, offline OCR, the theme studio, the interactive tutorial and security hardening. See the [changelog](CHANGELOG.md) for how Budget Buddy got here, from the original online prototype to the offline 2.x releases.
-
-Ideas I would like to include in future versions:
-
-- **Backup and restore** to a local file, so records can move to a new phone without a cloud account.
-- **Export to CSV** for spreadsheets.
-- **Recurring transactions** for rent, subscriptions and salary.
-- **A Home screen widget** showing what's left this month.
-- **More languages**, with the interface ready for translation.
 
 Suggestions and bug reports are welcome on the [issue tracker](https://github.com/Mi-N-512/Budget-Buddy/issues).
