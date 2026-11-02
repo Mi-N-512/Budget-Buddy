@@ -178,6 +178,33 @@
                     app:tint="?attr/budgetTextColor"/>
             </LinearLayout>
 
+            <!--REPEAT-->
+            <LinearLayout
+                android:id="@+id/repeatRow"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_input"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingStart="12dp"
+                android:paddingEnd="5dp"
+                android:layout_marginBottom="15dp">
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/ic_repeat"
+                    app:tint="?attr/budgetTextColor"/>
+                <Spinner
+                    android:id="@+id/spinnerRepeat"
+                    style="@style/CustomSpinner"
+                    android:layout_width="0dp"
+                    android:layout_height="50dp"
+                    android:layout_weight="1"
+                    android:background="@android:color/transparent"
+                    android:contentDescription="@string/repeat_choice_description"/>
+            </LinearLayout>
+
             <!--DESCRIPTION-->
             <EditText
                 android:id="@+id/etDescription"

@@ -61,6 +61,13 @@
                 style="@style/TransactionDetailBadge"
                 android:text="@string/income_included_in_limit"
                 android:visibility="gone" />
+            <TextView
+                android:id="@+id/tvDetailRepeat"
+                style="@style/TransactionDetailBadge"
+                android:drawableStart="@drawable/ic_repeat"
+                android:drawablePadding="8dp"
+                android:drawableTint="?attr/budgetPrimaryColor"
+                android:visibility="gone" />
             <ImageView
                 android:id="@+id/ivDetailReceipt"
                 android:layout_width="match_parent"

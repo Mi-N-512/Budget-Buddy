@@ -52,6 +52,7 @@ class AnalyticsActivity : BaseActivity() {
         displayCurrency()
         binding.imgBeetleJuice.contentDescription = localData.buddyName
         setupGaugeChart(formattedMonth)
+        loadCategoryLimits(formattedMonth)
         loadBarGraphData(formattedMonth, showMaxInfo)
 
         updateMonthDisplay()
@@ -169,7 +170,72 @@ class AnalyticsActivity : BaseActivity() {
         clearDatePickers()
         checkAndReloadGraph()
         setupGaugeChart(binding.tvCurrentMonth.text.toString())
+        loadCategoryLimits(binding.tvCurrentMonth.text.toString())
         loadBarGraphData(binding.tvCurrentMonth.text.toString(), showMaxInfo)
+    }
+
+    /** Lists every category with its own limit this month, coloured with the gauge palette. */
+    private fun loadCategoryLimits(month: String) {
+        val list = binding.categoryLimitsList
+        list.removeAllViews()
+        val monthKey = runCatching {
+            SimpleDateFormat("yyyy-MM", Locale.US).format(
+                requireNotNull(SimpleDateFormat("MMMM yyyy", Locale.getDefault()).parse(month))
+            )
+        }.getOrNull()
+        val limits = localData.getBudget(month)?.categories.orEmpty()
+            .mapValues { (_, category) -> category.allocation }
+        val spent = localData.getTransactions()
+            .filter { !it.isIncome && monthKey != null && it.date.startsWith(monthKey) }
+            .groupBy(Transaction::categoryId)
+            .mapValues { (_, values) -> values.sumOf(Transaction::amount) }
+        val rows = CategoryLimitCalculator.rows(limits, spent)
+        binding.tvCategoryLimitsEmpty.visibility = if (rows.isEmpty()) View.VISIBLE else View.GONE
+
+        val symbol = localData.currencySymbol
+        val palette = localData.gaugePalette
+        val surface = MaterialColors.getColor(binding.root, R.attr.budgetSurfaceColor)
+        val iconBackgrounds = listOf(
+            R.color.pastelPink, R.color.pastelOrange, R.color.pastelYellow,
+            R.color.pastelGreen, R.color.pastelBlue, R.color.pastelPurple
+        )
+        rows.forEachIndexed { index, row ->
+            val item = layoutInflater.inflate(R.layout.item_category_limit, list, false)
+            RuntimePaletteApplier.applyIfCustom(item)
+            val name = localData.categoryDisplayName(row.categoryId)
+            val money = { value: Double -> getString(R.string.money_amount, symbol, value) }
+            val color = AnalyticsCalculator.gaugeColor(row.percentage, palette)
+
+            val icon = item.findViewById<android.widget.ImageView>(R.id.imgLimitIcon)
+            CategoryIconCatalog.bind(icon, localData.categoryIcon(row.categoryId))
+            icon.background = androidx.core.content.ContextCompat
+                .getDrawable(this, R.drawable.circle_background)?.mutate()?.apply {
+                    setTint(androidx.core.content.ContextCompat.getColor(this@AnalyticsActivity, iconBackgrounds[index % iconBackgrounds.size]))
+                }
+            item.findViewById<android.widget.TextView>(R.id.tvLimitName).text = name
+            item.findViewById<android.widget.TextView>(R.id.tvLimitAmount).text =
+                getString(R.string.category_limit_spent_of, money(row.spent), money(row.limit))
+            item.findViewById<android.widget.ProgressBar>(R.id.limitProgress).apply {
+                progressTintList = android.content.res.ColorStateList.valueOf(color)
+                progressBackgroundTintList = android.content.res.ColorStateList.valueOf(ColorUtils.setAlphaComponent(color, 60))
+                progress = AnalyticsCalculator.gaugeSpeed(row.percentage).toInt()
+            }
+            item.findViewById<android.widget.TextView>(R.id.tvLimitStatus).apply {
+                text = when (row.status) {
+                    CategoryLimitCalculator.CategoryLimitStatus.ROOMY -> getString(R.string.category_limit_roomy, money(row.remaining))
+                    CategoryLimitCalculator.CategoryLimitStatus.SNUG -> getString(R.string.category_limit_snug, money(row.remaining))
+                    CategoryLimitCalculator.CategoryLimitStatus.TIGHT -> getString(R.string.category_limit_tight, money(row.remaining))
+                    CategoryLimitCalculator.CategoryLimitStatus.OVER -> getString(R.string.category_limit_over, money(-row.remaining))
+                }
+                setTextColor(readableAnalyticsColor(color, surface))
+            }
+            item.contentDescription = getString(
+                R.string.category_limit_row_description,
+                name,
+                AnalyticsCalculator.spentPercentage(row.spent, row.limit)
+            )
+            list.addView(item)
+        }
     }
 
     private fun loadBarGraphData(selectedMonth:String, showMaxInfo: Boolean){

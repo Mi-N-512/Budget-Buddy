@@ -45,6 +45,13 @@ class TransactionDetailActivity : BaseActivity() {
             localData.categoryDisplayName(transaction.categoryId)
         )
         binding.tvDetailLimit.visibility = if (transaction.addsToSpendingLimit) View.VISIBLE else View.GONE
+        val repeatText = when {
+            transaction.repeatOf != null -> getString(R.string.repeat_copy_note)
+            transaction.repeat != RepeatFrequency.NONE -> getString(TransactionActivity.repeatLabel(transaction.repeat))
+            else -> null
+        }
+        binding.tvDetailRepeat.visibility = if (repeatText == null) View.GONE else View.VISIBLE
+        binding.tvDetailRepeat.text = repeatText
         val icon = localData.categoryIcon(transaction.categoryId)
         CategoryIconCatalog.bind(binding.imgDetailCategory, icon)
         val receipt = transaction.photoPath?.let(::File)?.takeIf { ReceiptStorage.isUsableOwnedReceipt(this, it) }
