@@ -173,7 +173,7 @@
                         <TextView
                             android:id="@+id/tvFeedBack"
                             android:layout_width="wrap_content"
-                            android:layout_height="30dp"
+                            android:layout_height="wrap_content"
                             android:textSize="20sp"
                             android:text="@string/feedback"
                             android:textColor="?attr/budgetTextColor"
@@ -183,7 +183,7 @@
                         <TextView
                             android:id="@+id/tvPercentage"
                             android:layout_width="wrap_content"
-                            android:layout_height="50dp"
+                            android:layout_height="wrap_content"
                             android:textSize="20sp"
                             android:text="@string/spending_prompt"
                             android:textColor="?attr/budgetTextColor"
@@ -209,8 +209,9 @@
                             android:gravity="center_vertical">
                             <TextView
                                 android:id="@+id/tvMinSpendGoal"
-                                android:layout_width="wrap_content"
-                                android:layout_height="30dp"
+                                android:layout_width="0dp"
+                                android:layout_weight="1"
+                                android:layout_height="wrap_content"
                                 android:textSize="19sp"
                                 android:text="@string/minimum_spending_goal"
                                 android:textColor="?attr/budgetTextColor"
@@ -219,14 +220,14 @@
                             <TextView
                                 android:id="@+id/tvCurrency1"
                                 android:layout_width="wrap_content"
-                                android:layout_height="30dp"
+                                android:layout_height="wrap_content"
                                 android:textSize="20sp"
                                 android:textColor="?attr/budgetTextColor"
                                 android:fontFamily="@font/roboto_bold" />
                             <TextView
                                 android:id="@+id/tvMinGoal"
                                 android:layout_width="wrap_content"
-                                android:layout_height="30dp"
+                                android:layout_height="wrap_content"
                                 android:textSize="20sp"
                                 android:text="@string/no_money"
                                 android:textColor="?attr/budgetTextColor"
@@ -244,8 +245,9 @@
                             android:padding="5dp">
                             <TextView
                                 android:id="@+id/tvMaxSpendGoal"
-                                android:layout_width="wrap_content"
-                                android:layout_height="30dp"
+                                android:layout_width="0dp"
+                                android:layout_weight="1"
+                                android:layout_height="wrap_content"
                                 android:textSize="19sp"
                                 android:text="@string/maximum_spending_goal"
                                 android:textColor="?attr/budgetTextColor"
@@ -254,14 +256,14 @@
                             <TextView
                                 android:id="@+id/tvCurrency2"
                                 android:layout_width="wrap_content"
-                                android:layout_height="30dp"
+                                android:layout_height="wrap_content"
                                 android:textSize="20sp"
                                 android:textColor="?attr/budgetTextColor"
                                 android:fontFamily="@font/roboto_bold" />
                             <TextView
                                 android:id="@+id/tvMaxGoal"
                                 android:layout_width="wrap_content"
-                                android:layout_height="30dp"
+                                android:layout_height="wrap_content"
                                 android:textSize="20sp"
                                 android:text="@string/no_money"
                                 android:textColor="?attr/budgetTextColor"

@@ -334,6 +334,10 @@ class AnalyticsActivity : BaseActivity() {
         dataSet.setColors(gaugePalette.bad, gaugePalette.good) // spent, remaining
         dataSet.stackLabels = arrayOf(getString(R.string.chart_spent_label), getString(R.string.chart_left_label))
         styleChart(dataSet, bars.map(CategoryBar::label), showLegend = true)
+        // Each stack segment would print its own amount on top of the next one; the
+        // Category limits card above already lists the exact figures.
+        dataSet.setDrawValues(false)
+        binding.categoryBarGraph.invalidate()
     }
 
     /** Shared look for both chart modes: every category labelled, sized to fit, no hidden zoom. */
